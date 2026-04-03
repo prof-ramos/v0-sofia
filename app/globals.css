@@ -1,0 +1,119 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* BrandKit ASOF - SOFIA */
+:root {
+  /* Cores principais ASOF */
+  --navy-dark: #0C1A2E;
+  --navy: #0F2240;
+  --gold: #D4B85C;
+  --white: #FFFFFF;
+  --gray-light: #F5F5F5;
+  --gray: #E5E5E5;
+  --gray-medium: #666666;
+  
+  /* Design tokens */
+  --background: var(--white);
+  --foreground: var(--navy-dark);
+  --card: var(--white);
+  --card-foreground: var(--navy-dark);
+  --popover: var(--white);
+  --popover-foreground: var(--navy-dark);
+  --primary: var(--navy);
+  --primary-foreground: var(--white);
+  --secondary: var(--gray-light);
+  --secondary-foreground: var(--navy-dark);
+  --muted: var(--gray-light);
+  --muted-foreground: var(--gray-medium);
+  --accent: var(--gold);
+  --accent-foreground: var(--navy-dark);
+  --destructive: #DC2626;
+  --destructive-foreground: var(--white);
+  --border: var(--gray);
+  --input: var(--gray);
+  --ring: var(--gold);
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --font-sans: 'Trebuchet MS', 'Trebuchet MS Fallback', sans-serif;
+  --font-serif: 'Georgia', 'Georgia Fallback', serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Cores customizadas ASOF */
+  --color-navy-dark: var(--navy-dark);
+  --color-navy: var(--navy);
+  --color-gold: var(--gold);
+  --color-gray-light: var(--gray-light);
+  --color-gray-medium: var(--gray-medium);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Estilo para citacoes normativas */
+.citation-block {
+  @apply border-l-4 border-gold bg-gray-light pl-4 py-3 my-3 font-serif text-sm;
+}
+
+/* Animacao suave para mensagens */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-enter {
+  animation: fade-in 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .message-enter {
+    animation: none;
+  }
+}
+
+/* Safe area para iOS */
+.safe-area-top {
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+
+.safe-area-bottom {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+/* Touch targets minimos de 44px */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
