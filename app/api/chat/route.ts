@@ -10,6 +10,43 @@ const openai = process.env.OPENAI_API_KEY
   ? createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
   : null
 
+interface MessagePart {
+  type?: string
+  text?: string
+}
+
+const MAX_SAVE_ATTEMPTS = 3
+const BASE_RETRY_DELAY_MS = 500
+
+async function saveWithRetry(
+  sessionId: string,
+  role: 'user' | 'assistant',
+  content: string,
+  sourceDocuments?: string[],
+) {
+  for (let attempt = 1; attempt <= MAX_SAVE_ATTEMPTS; attempt++) {
+    try {
+      await saveMessage(sessionId, role, content, sourceDocuments)
+      return
+    } catch (err) {
+      const label = role === 'user' ? 'usuário' : 'assistente'
+      console.error(
+        `[Save] Erro ao salvar mensagem do ${label} (tentativa ${attempt}/${MAX_SAVE_ATTEMPTS}):`,
+        err,
+      )
+      if (attempt === MAX_SAVE_ATTEMPTS) {
+        console.error(
+          `[Save] Falha definitiva ao salvar mensagem do ${label} após ${MAX_SAVE_ATTEMPTS} tentativas.`,
+        )
+        return
+      }
+      const jitter = Math.random() * 200
+      const delay = BASE_RETRY_DELAY_MS * Math.pow(2, attempt - 1) + jitter
+      await new Promise((r) => setTimeout(r, delay))
+    }
+  }
+}
+
 export async function POST(req: Request) {
   try {
     if (!openai) {
@@ -41,9 +78,9 @@ export async function POST(req: Request) {
     let userText = ''
 
     if ('parts' in message && Array.isArray(message.parts)) {
-      userText = message.parts
-        .filter((p: { type?: string; text?: string }) => p.type === 'text')
-        .map((p: { type?: string; text?: string }) => p.text || '')
+      userText = (message.parts as MessagePart[])
+        .filter((p: MessagePart) => p.type === 'text')
+        .map((p: MessagePart) => p.text || '')
         .join('')
     } else if (typeof message.content === 'string') {
       userText = message.content
@@ -62,9 +99,8 @@ export async function POST(req: Request) {
     const relevantDocs = await searchDocuments(trimmedText)
 
     // Salvar mensagem do usuário em background (não bloqueia a resposta)
-    saveMessage(sessionId, 'user', trimmedText).catch((err) =>
-      console.error('Erro ao salvar mensagem do usuário:', err),
-    )
+    saveWithRetry(sessionId, 'user', trimmedText)
+
     const context = formatContext(relevantDocs)
 
     // Criar mensagens para o modelo
@@ -80,27 +116,12 @@ export async function POST(req: Request) {
         console.error('[AI Stream] Erro durante streaming:', error)
       },
       onFinish: async ({ text }) => {
-        let attempts = 0;
-        const maxRetries = 2;
-        while (attempts <= maxRetries) {
-          try {
-            await saveMessage(
-              sessionId,
-              'assistant',
-              text,
-              relevantDocs.map(d => d.id),
-            )
-            break;
-          } catch (err) {
-            attempts++;
-            console.error(`[AI Stream] Erro ao salvar mensagem assistente (tentativa ${attempts}):`, err);
-            if (attempts > maxRetries) {
-              console.error('[AI Stream] Falha definitiva após retentativas. A mensagem não foi salva no banco.');
-            } else {
-              await new Promise(r => setTimeout(r, 500 * attempts));
-            }
-          }
-        }
+        await saveWithRetry(
+          sessionId,
+          'assistant',
+          text,
+          relevantDocs.map((d) => d.id),
+        )
       },
     })
 

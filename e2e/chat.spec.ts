@@ -77,7 +77,7 @@ test.describe('SOFIA Chat', () => {
 
     await chatPage.waitForAssistantResponse()
 
-    const assistantMsg = chatPage.getAssistantMessage()
+    const assistantMsg = chatPage.getAssistantMessage().first()
     await expect(assistantMsg).toBeVisible()
     await expect(assistantMsg).not.toBeEmpty()
   })

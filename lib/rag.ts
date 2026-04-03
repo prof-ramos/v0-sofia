@@ -48,7 +48,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
 export async function searchDocuments(query: string): Promise<DocumentChunk[]> {
   const supabase = await createClient()
 
-  // Verificar se existem documentos com embeddings (cacheado por 5min)
+  // Verificar se existem documentos com embeddings (cacheado por 60s)
   const hasEmbeddings = await checkHasEmbeddings()
 
   // Se não houver embeddings, fazer busca textual simples

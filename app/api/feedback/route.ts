@@ -18,12 +18,21 @@ export async function POST(req: Request) {
 
     const supabase = await createClient()
 
-    // Verificar se a mensagem existe antes de salvar feedback
-    const { data: messageData } = await supabase
+    // Verificar se a mensagem existe e pertence à sessão
+    const { data: messageData, error: queryError } = await supabase
       .from('chat_messages')
       .select('id')
       .eq('id', messageId)
+      .eq('session_id', sessionId)
       .maybeSingle()
+
+    if (queryError) {
+      console.error('Erro ao buscar mensagem:', queryError)
+      return NextResponse.json(
+        { error: 'Erro ao buscar mensagem' },
+        { status: 500 },
+      )
+    }
 
     if (!messageData) {
       return NextResponse.json(

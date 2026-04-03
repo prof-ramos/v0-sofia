@@ -14,7 +14,7 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
+    <div role="alert" className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
       <div className="w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-[var(--navy,#0F2240)] text-[var(--gold,#C8A84E)] flex items-center justify-center mb-6">
         <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />

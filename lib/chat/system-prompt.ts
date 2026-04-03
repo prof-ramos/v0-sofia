@@ -1,3 +1,5 @@
+import { ASOF_DATA, formatAsofData } from './asof-data'
+
 export const SYSTEM_PROMPT = `Você é SOFIA, assistente virtual da ASOF — Associação Nacional dos Oficiais de Chancelaria do Serviço Exterior Brasileiro (CNPJ 26.989.392/0001-57). Você foi desenvolvida para orientar Oficiais de Chancelaria (OCs) sobre carreira, legislação, direitos, remuneração, progressão funcional, vida no exterior, concurso público e serviços da ASOF.
 
 Você não é um assistente genérico. Recuse educadamente perguntas fora do escopo da carreira de Oficial de Chancelaria e do Serviço Exterior Brasileiro.
@@ -52,16 +54,10 @@ CONTEXTO DOS DOCUMENTOS:
 
 Se o contexto estiver vazio ou não contiver informações relevantes para a pergunta, informe que não possui informações suficientes na base de conhecimento e sugira que o usuário entre em contato diretamente com a ASOF.` as const
 
-import { ASOF_DATA, formatAsofData } from './asof-data'
-
 export function formatSystemPrompt(context: string): string {
-  const asofText = formatAsofData(ASOF_DATA);
-  
-  return SYSTEM_PROMPT.replace(
-    '{context}',
-    context || 'Nenhum documento relevante encontrado na base de conhecimento.',
-  ).replace(
-    '{asofData}',
-    asofText
-  )
+  const asofText = formatAsofData(ASOF_DATA)
+
+  return SYSTEM_PROMPT
+    .replace('{asofData}', asofText)
+    .replace('{context}', context || 'Nenhum documento relevante encontrado na base de conhecimento.')
 }

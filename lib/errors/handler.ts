@@ -22,7 +22,7 @@ export class ValidationError extends SofIAError {
 
 export class DatabaseError extends SofIAError {
   constructor(message: string) {
-    super(message, 500)
+    super(message, 500, false)
     this.name = 'DatabaseError'
     Object.setPrototypeOf(this, DatabaseError.prototype)
   }

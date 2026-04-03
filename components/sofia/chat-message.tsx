@@ -43,10 +43,23 @@ function formatMessageContent(text: string) {
   })
 }
 
+function getFeedbackButtonClass(
+  currentFeedback: 'positive' | 'negative' | null,
+  target: 'positive' | 'negative',
+): string {
+  if (currentFeedback === target) {
+    return 'bg-[var(--gold-pale)] border-[var(--gold)] text-[var(--navy-dark)]'
+  }
+  if (currentFeedback !== null) {
+    return 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] opacity-70 cursor-not-allowed'
+  }
+  return 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] cursor-pointer hover:border-[var(--gold)] hover:text-[var(--navy-dark)] hover:bg-[var(--gold-pale)]'
+}
+
 const ChatMessageInner = memo(function ChatMessageInner({ message, onFeedback }: ChatMessageProps) {
   const [feedback, setFeedback] = useState<'positive' | 'negative' | null>(null)
   const isUser = message.role === 'user'
-  const text = useMemo(() => getMessageText(message), [message.id, message.parts])
+  const text = useMemo(() => getMessageText(message), [message])
   const formattedContent = useMemo(() => formatMessageContent(text), [text])
 
   const handleFeedback = (rating: 'positive' | 'negative') => {
@@ -79,11 +92,7 @@ const ChatMessageInner = memo(function ChatMessageInner({ message, onFeedback }:
             disabled={feedback !== null}
             className={cn(
               'font-sans text-[10px] px-3 py-1 rounded-full border transition-all duration-150',
-              feedback === 'positive'
-                ? 'bg-[var(--gold-pale)] border-[var(--gold)] text-[var(--navy-dark)]'
-                : feedback !== null
-                  ? 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] opacity-70 cursor-not-allowed'
-                  : 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] cursor-pointer hover:border-[var(--gold)] hover:text-[var(--navy-dark)] hover:bg-[var(--gold-pale)]'
+              getFeedbackButtonClass(feedback, 'positive'),
             )}
           >
             útil
@@ -95,11 +104,7 @@ const ChatMessageInner = memo(function ChatMessageInner({ message, onFeedback }:
             disabled={feedback !== null}
             className={cn(
               'font-sans text-[10px] px-3 py-1 rounded-full border transition-all duration-150',
-              feedback === 'negative'
-                ? 'bg-[var(--gold-pale)] border-[var(--gold)] text-[var(--navy-dark)]'
-                : feedback !== null
-                  ? 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] opacity-70 cursor-not-allowed'
-                  : 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] cursor-pointer hover:border-[var(--gold)] hover:text-[var(--navy-dark)] hover:bg-[var(--gold-pale)]'
+              getFeedbackButtonClass(feedback, 'negative'),
             )}
           >
             impreciso

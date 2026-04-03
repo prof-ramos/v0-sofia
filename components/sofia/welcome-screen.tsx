@@ -4,6 +4,15 @@ interface WelcomeScreenProps {
   onSuggestionClick: (suggestion: string) => void
 }
 
+function sanitizeTestId(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
 const suggestions = [
   'Promoção na carreira',
   'Remoção para o exterior',
@@ -33,7 +42,7 @@ export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
         {suggestions.map((suggestion) => (
           <button
             key={suggestion}
-            data-testid={`suggestion-${suggestion.toLowerCase().replace(/\s+/g, '-')}`}
+            data-testid={`suggestion-${sanitizeTestId(suggestion)}`}
             onClick={() => onSuggestionClick(suggestion)}
             aria-label={`Enviar sugestão: ${suggestion}`}
             className="font-sans text-[11px] font-bold text-[var(--navy)] bg-[var(--surface)] border border-[var(--navy)] px-3.5 py-[7px] rounded-3xl cursor-pointer transition-all duration-[180ms] hover:bg-[var(--navy-dark)] hover:text-[var(--gold-light)] hover:border-[var(--navy-dark)] hover:-translate-y-0.5 hover:shadow-[0_4px_14px_rgba(12,26,46,.18)] active:scale-[0.97] touch-manipulation"

@@ -63,7 +63,7 @@ export class ChatPage {
   }
 
   async clickSuggestionByText(text: string) {
-    await this.suggestionButtons.filter({ hasText: text }).click()
+    await this.suggestionButtons.filter({ hasText: text }).first().click()
   }
 
   getUserMessage(text: string): Locator {
