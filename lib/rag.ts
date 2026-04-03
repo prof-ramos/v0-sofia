@@ -1,9 +1,26 @@
 import { embed } from 'ai'
+import { unstable_cache } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { CHAT_CONFIG } from '@/lib/chat/constants'
 
-const EMBEDDING_MODEL = 'openai/text-embedding-3-small'
-const SIMILARITY_THRESHOLD = 0.7
-const MAX_RESULTS = 5
+const { EMBEDDING_MODEL, SIMILARITY_THRESHOLD, MAX_RESULTS } = CHAT_CONFIG
+
+const checkHasEmbeddings = unstable_cache(
+  async () => {
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    const { count } = await supabase
+      .from('documents')
+      .select('id', { count: 'exact', head: true })
+      .not('embedding', 'is', null)
+    return (count ?? 0) > 0
+  },
+  ['sofia-has-embeddings'],
+  { revalidate: 300 },
+)
 
 export interface DocumentChunk {
   id: string
@@ -30,15 +47,12 @@ export async function generateEmbedding(text: string): Promise<number[]> {
  */
 export async function searchDocuments(query: string): Promise<DocumentChunk[]> {
   const supabase = await createClient()
-  
-  // Verificar se existem documentos com embeddings
-  const { count } = await supabase
-    .from('documents')
-    .select('*', { count: 'exact', head: true })
-    .not('embedding', 'is', null)
+
+  // Verificar se existem documentos com embeddings (cacheado por 5min)
+  const hasEmbeddings = await checkHasEmbeddings()
 
   // Se não houver embeddings, fazer busca textual simples
-  if (!count || count === 0) {
+  if (!hasEmbeddings) {
     const { data, error } = await supabase
       .from('documents')
       .select('id, content, source_title, source_type, article_number')

@@ -3,36 +3,48 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* BrandKit ASOF - SOFIA */
+/* BrandKit ASOF — SOFIA */
 :root {
-  /* Cores principais ASOF */
+  /* Navy palette */
   --navy-dark: #0C1A2E;
   --navy: #0F2240;
-  --gold: #D4B85C;
+  --navy-mid: #1B3358;
+
+  /* Gold palette */
+  --gold: #C8A84E;
+  --gold-light: #E2C47A;
+  --gold-pale: #F5EDD0;
+
+  /* Neutrals */
+  --cream: #F7F5F0;
+  --surface: #FFFFFF;
+  --border-color: #DDD8CC;
+  --border-dark: #C8C0B0;
+  --ink: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6B7280;
+  --on-dark: #E8EDF4;
   --white: #FFFFFF;
-  --gray-light: #F5F5F5;
-  --gray: #E5E5E5;
-  --gray-medium: #666666;
-  
+
   /* Design tokens */
-  --background: var(--white);
-  --foreground: var(--navy-dark);
-  --card: var(--white);
-  --card-foreground: var(--navy-dark);
-  --popover: var(--white);
-  --popover-foreground: var(--navy-dark);
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
   --primary: var(--navy);
-  --primary-foreground: var(--white);
-  --secondary: var(--gray-light);
-  --secondary-foreground: var(--navy-dark);
-  --muted: var(--gray-light);
-  --muted-foreground: var(--gray-medium);
+  --primary-foreground: var(--on-dark);
+  --secondary: var(--cream);
+  --secondary-foreground: var(--ink);
+  --muted: var(--cream);
+  --muted-foreground: var(--text-muted);
   --accent: var(--gold);
   --accent-foreground: var(--navy-dark);
   --destructive: #DC2626;
-  --destructive-foreground: var(--white);
-  --border: var(--gray);
-  --input: var(--gray);
+  --destructive-foreground: var(--surface);
+  --border: var(--border-color);
+  --input: var(--border-color);
   --ring: var(--gold);
   --radius: 0.5rem;
 }
@@ -64,13 +76,21 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  
-  /* Cores customizadas ASOF */
+
+  /* ASOF custom colors */
   --color-navy-dark: var(--navy-dark);
   --color-navy: var(--navy);
+  --color-navy-mid: var(--navy-mid);
   --color-gold: var(--gold);
-  --color-gray-light: var(--gray-light);
-  --color-gray-medium: var(--gray-medium);
+  --color-gold-light: var(--gold-light);
+  --color-gold-pale: var(--gold-pale);
+  --color-cream: var(--cream);
+  --color-surface: var(--surface);
+  --color-border-dark: var(--border-dark);
+  --color-ink: var(--ink);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-on-dark: var(--on-dark);
 }
 
 @layer base {
@@ -82,38 +102,103 @@
   }
 }
 
-/* Estilo para citacoes normativas */
-.citation-block {
-  @apply border-l-4 border-gold bg-gray-light pl-4 py-3 my-3 font-serif text-sm;
-}
-
-/* Animacao suave para mensagens */
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
+/* Animations */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.message-enter {
-  animation: fade-in 0.3s ease-out;
+@keyframes typing-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
 }
 
+.fade-up {
+  animation: fade-up 0.5s ease both;
+}
+
+.message-enter {
+  animation: fade-up 0.3s ease both;
+}
+
+.typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: typing-pulse 1.2s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
 @media (prefers-reduced-motion: reduce) {
+  .fade-up,
   .message-enter {
     animation: none;
   }
+  .typing-dot {
+    animation: none;
+    opacity: 0.6;
+  }
 }
 
-/* Safe area para iOS */
+/* Bubble styles */
+.bubble-sofia {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 10px 10px 10px;
+  box-shadow: 0 2px 8px rgba(12, 26, 46, 0.07);
+}
+
+.bubble-user {
+  background: var(--navy-dark);
+  color: var(--on-dark);
+  border-radius: 10px 0 10px 10px;
+}
+
+.bubble-typing {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 0 10px 10px 10px;
+  box-shadow: 0 2px 8px rgba(12, 26, 46, 0.07);
+  overflow: hidden;
+}
+
+/* Citações normativas */
+.citation-block {
+  border-left: 3px solid var(--gold);
+  background: var(--gold-pale);
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+}
+
+/* Chat scrollbar */
+.chat-scroll { scrollbar-width: thin; scrollbar-color: var(--border-dark) transparent; }
+.chat-scroll::-webkit-scrollbar { width: 3px; }
+.chat-scroll::-webkit-scrollbar-track { background: transparent; }
+.chat-scroll::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 2px; }
+
+/* Send button hover: SVG stroke */
+.send-icon line,
+.send-icon polygon {
+  transition: stroke 0.15s;
+}
+
+.send-btn:hover .send-icon line,
+.send-btn:hover .send-icon polygon {
+  stroke: var(--navy-dark);
+}
+
+/* Safe area iOS */
 .safe-area-top {
   padding-top: max(12px, env(safe-area-inset-top));
 }
 
 .safe-area-bottom {
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
-}
-
-/* Touch targets minimos de 44px */
-.touch-target {
-  min-width: 44px;
-  min-height: 44px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
 }

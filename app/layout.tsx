@@ -13,20 +13,12 @@ export const metadata: Metadata = {
   authors: [{ name: 'ASOF - Associação dos Oficiais de Chancelaria' }],
   icons: {
     icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
+      { url: '/favicon.svg' },
+      { url: '/favicon-light.png', media: '(prefers-color-scheme: light)' },
+      { url: '/favicon-dark.png', media: '(prefers-color-scheme: dark)' }
     ],
-    apple: '/apple-icon.png',
+    apple: '/apple-touch-icon.png',
+    shortcut: '/shortcut-icon.png'
   },
 }
 
@@ -34,6 +26,7 @@ export const viewport: Viewport = {
   themeColor: '#0F2240',
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({

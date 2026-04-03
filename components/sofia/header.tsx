@@ -1,21 +1,32 @@
 'use client'
 
-import type { ReactElement } from 'react'
-import { Scale } from 'lucide-react'
+import Image from 'next/image'
 
-export function SofiaHeader(): ReactElement {
+export function SofiaHeader() {
   return (
-    <header className="bg-[var(--navy)] text-white px-4 py-3 shadow-md safe-area-top">
-      <div className="max-w-4xl mx-auto flex items-center gap-3">
-        <div className="flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-[var(--gold)] text-[var(--navy-dark)]">
-          <Scale className="w-5 h-5" />
+    <header data-testid="header" className="bg-[var(--navy-dark)] flex items-center justify-between px-4 h-[52px] shrink-0 border-b-2 border-[var(--gold)] safe-area-top sm:px-[22px] sm:h-[60px]">
+      <div className="flex items-center gap-3.5">
+        <div className="w-9 h-9 min-w-[36px] min-h-[36px] shrink-0 sm:w-10 sm:h-10">
+          <Image
+            src="/logo.svg"
+            alt="Logo ASOF"
+            width={40}
+            height={40}
+            priority
+            className="w-full h-full object-contain"
+          />
         </div>
-        <div className="min-w-0 flex-1">
-          <h1 className="text-base font-semibold tracking-tight md:text-lg">SOFIA</h1>
-          <p className="text-[11px] text-white/80 truncate md:text-xs">
-            Sistema de Orientacao Funcional e Informacao Administrativa
+        <div className="flex flex-col gap-0.5">
+          <h1 data-testid="header-title" className="font-serif text-lg font-bold text-white tracking-[6px] leading-none sm:text-xl">
+            SOFIA
+          </h1>
+          <p className="font-sans text-[9px] text-[var(--gold-light)] tracking-[1.2px] uppercase max-sm:hidden">
+            Sistema de Orientação Funcional e Informação Administrativa
           </p>
         </div>
+      </div>
+      <div className="font-sans text-[10px] font-bold text-[var(--gold)] border border-[var(--gold)] px-3 py-1 tracking-[2px]">
+        ASOF
       </div>
     </header>
   )

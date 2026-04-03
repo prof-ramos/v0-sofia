@@ -1,82 +1,100 @@
 import { streamText, convertToModelMessages, type UIMessage } from 'ai'
+import { createOpenAI } from '@ai-sdk/openai'
+import { NextResponse } from 'next/server'
 import { searchDocuments, formatContext, saveMessage } from '@/lib/rag'
-
-const SYSTEM_PROMPT = `Você é SOFIA (Sistema de Orientação Funcional e Informação Administrativa), a assistente virtual oficial da ASOF (Associação dos Oficiais de Chancelaria) do Ministério das Relações Exteriores do Brasil.
-
-DIRETRIZES DE COMPORTAMENTO:
-
-1. IDENTIDADE E TOM:
-- Mantenha tom formal, técnico e institucional compatível com o MRE
-- Nunca use linguagem coloquial, gírias ou expressões afetivas
-- Trate os usuários de forma respeitosa e profissional
-- Não use emojis ou elementos decorativos
-
-2. ESCOPO DE ATUAÇÃO:
-- Responda APENAS sobre a carreira de Oficial de Chancelaria
-- Temas permitidos: plano de carreira, promoções, remoções, direitos, deveres, legislação aplicável, capacitação, benefícios
-- Para questões fora do escopo, redirecione educadamente para os canais adequados da ASOF
-
-3. USO DE FONTES E CITAÇÕES:
-- Baseie suas respostas EXCLUSIVAMENTE nas informações do contexto fornecido
-- Quando citar legislação ou documentos normativos, use o formato: [[Citação do texto normativo - Fonte: Nome do documento, Artigo X]]
-- Se não houver informação suficiente no contexto, informe claramente e sugira contato com a ASOF
-
-4. ESTRUTURA DAS RESPOSTAS:
-- Seja objetivo e direto
-- Organize respostas longas em tópicos ou parágrafos claros
-- Sempre cite a fonte normativa quando aplicável
-- Indique quando uma orientação é genérica e pode ter exceções
-
-5. LIMITAÇÕES:
-- Não forneça aconselhamento jurídico específico
-- Não emita opiniões pessoais sobre políticas do MRE
-- Não prometa resultados ou prazos específicos
-- Encaminhe casos complexos para atendimento presencial da ASOF
-
-CONTEXTO DOS DOCUMENTOS:
-{context}
-
-Se o contexto estiver vazio ou não contiver informações relevantes para a pergunta, informe que não possui informações suficientes na base de conhecimento e sugira que o usuário entre em contato diretamente com a ASOF.`
+import { CHAT_CONFIG } from '@/lib/chat/constants'
+import { formatSystemPrompt } from '@/lib/chat/system-prompt'
+import { chatRequestSchema } from '@/lib/schemas'
 
 export async function POST(req: Request) {
-  const { message, sessionId } = await req.json()
-  
-  // Converter mensagem para formato esperado
-  const userMessage = message as UIMessage
-  const userText = userMessage.parts
-    ?.filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-    .map((p) => p.text)
-    .join('') || ''
+  try {
+    let rawBody;
+    try {
+      rawBody = await req.json()
+    } catch {
+      return NextResponse.json(
+        { error: 'Request inválido', details: 'Invalid JSON body' },
+        { status: 400 }
+      )
+    }
+    const validation = chatRequestSchema.safeParse(rawBody)
 
-  // Buscar documentos relevantes via RAG
-  const relevantDocs = await searchDocuments(userText)
-  const context = formatContext(relevantDocs)
-  
-  // Salvar mensagem do usuário
-  await saveMessage(sessionId, 'user', userText)
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Request inválido', details: validation.error.flatten() },
+        { status: 400 },
+      )
+    }
 
-  // Preparar system prompt com contexto
-  const systemPromptWithContext = SYSTEM_PROMPT.replace('{context}', context || 'Nenhum documento relevante encontrado na base de conhecimento.')
+    const { message, sessionId } = validation.data
 
-  // Criar mensagens para o modelo
-  const messages = await convertToModelMessages([userMessage])
+    // Converter mensagem para formato esperado
+    const userMessage = message as any
+    let userText = ''
+    
+    if (userMessage.parts && Array.isArray(userMessage.parts)) {
+      userText = userMessage.parts
+        .filter((p: any) => p.type === 'text')
+        .map((p: any) => p.text)
+        .join('')
+    } else if (typeof userMessage.content === 'string') {
+      userText = userMessage.content
+    }
 
-  const result = streamText({
-    model: 'openai/gpt-5-nano',
-    system: systemPromptWithContext,
-    messages,
-  })
+    if (!userText) {
+      return NextResponse.json(
+        { error: 'Mensagem não contém texto' },
+        { status: 400 }
+      )
+    }
 
-  // Salvar resposta do assistente quando terminar
-  result.then(async (finalResult) => {
-    const responseText = await finalResult.text
-    await saveMessage(
-      sessionId, 
-      'assistant', 
-      responseText,
-      relevantDocs.map(d => d.id)
+    // Buscar documentos relevantes via RAG e salvar mensagem do usuário em paralelo
+    const [relevantDocs] = await Promise.all([
+      searchDocuments(userText),
+      saveMessage(sessionId, 'user', userText),
+    ])
+    const context = formatContext(relevantDocs)
+
+    // Criar mensagens para o modelo
+    const messages = await convertToModelMessages([userMessage])
+
+    const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const result = streamText({
+      model: openai(CHAT_CONFIG.MODEL.replace('openai/', '')),
+      system: formatSystemPrompt(context),
+      messages,
+      onFinish: async ({ text }) => {
+        let attempts = 0;
+        const maxRetries = 2;
+        while (attempts <= maxRetries) {
+          try {
+            await saveMessage(
+              sessionId,
+              'assistant',
+              text,
+              relevantDocs.map(d => d.id),
+            )
+            break;
+          } catch (err) {
+            attempts++;
+            console.error(`[AI Stream] Erro ao salvar mensagem assistente (tentativa ${attempts}):`, err);
+            if (attempts > maxRetries) {
+              console.error('[AI Stream] Falha definitiva após retentativas. A mensagem não foi salva no banco.');
+            } else {
+              await new Promise(r => setTimeout(r, 500 * attempts));
+            }
+          }
+        }
+      },
+    })
+
+    result.consumeStream()
+    return result.toUIMessageStreamResponse()
+  } catch (error) {
+    console.error('Erro no endpoint de chat:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 },
     )
-  })
-
-  return result.toUIMessageStreamResponse()
+  }
 }

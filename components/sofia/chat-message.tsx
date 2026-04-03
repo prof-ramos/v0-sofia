@@ -1,9 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, memo } from 'react'
 import type { UIMessage } from 'ai'
-import { ThumbsUp, ThumbsDown, User } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 interface ChatMessageProps {
@@ -21,7 +19,7 @@ function getMessageText(message: UIMessage): string {
 
 function formatMessageContent(text: string) {
   const parts = text.split(/(\[\[[\s\S]*?\]\])/g)
-  
+
   return parts.map((part, index) => {
     if (part.startsWith('[[') && part.endsWith(']]')) {
       const citation = part.slice(2, -2).trim()
@@ -31,9 +29,9 @@ function formatMessageContent(text: string) {
         </blockquote>
       )
     }
-    
+
     return part.split('\n\n').map((paragraph, pIndex) => (
-      <p key={`${index}-${pIndex}`} className="mb-3 last:mb-0 leading-relaxed">
+      <p key={`${index}-${pIndex}`} className="mb-3 last:mb-0">
         {paragraph.split('\n').map((line, lIndex, arr) => (
           <span key={lIndex}>
             {line}
@@ -45,10 +43,11 @@ function formatMessageContent(text: string) {
   })
 }
 
-export function ChatMessage({ message, onFeedback }: ChatMessageProps) {
+const ChatMessageInner = memo(function ChatMessageInner({ message, onFeedback }: ChatMessageProps) {
   const [feedback, setFeedback] = useState<'positive' | 'negative' | null>(null)
   const isUser = message.role === 'user'
-  const text = getMessageText(message)
+  const text = useMemo(() => getMessageText(message), [message.id, JSON.stringify(message.parts)])
+  const formattedContent = useMemo(() => formatMessageContent(text), [text])
 
   const handleFeedback = (rating: 'positive' | 'negative') => {
     setFeedback(rating)
@@ -56,68 +55,59 @@ export function ChatMessage({ message, onFeedback }: ChatMessageProps) {
   }
 
   return (
-    <div className={cn('flex gap-2 message-enter md:gap-3', isUser && 'flex-row-reverse')}>
-      <div
-        className={cn(
-          'flex items-center justify-center w-8 h-8 min-w-[32px] min-h-[32px] rounded-full shrink-0 md:w-9 md:h-9',
-          isUser
-            ? 'bg-[var(--gray)] text-[var(--navy-dark)]'
-            : 'bg-[var(--navy)] text-[var(--gold)]'
-        )}
-      >
-        {isUser ? (
-          <User className="w-4 h-4" />
-        ) : (
-          <span className="text-xs font-semibold">S</span>
-        )}
+    <div data-testid={isUser ? 'message-user' : 'message-assistant'} className={cn('flex flex-col mb-4 message-enter', isUser ? 'items-end' : 'items-start')}>
+      <div className={cn(
+        'font-sans text-[9px] font-bold tracking-[2px] uppercase mb-1 px-0.5',
+        isUser ? 'text-[var(--text-muted)]' : 'text-[var(--gold)]'
+      )}>
+        {isUser ? 'VOCE' : 'SOFIA — ASOF'}
       </div>
 
-      <div
-        className={cn(
-          'flex-1 max-w-[calc(100%-48px)] rounded-lg p-3 md:max-w-[85%] md:p-4',
-          isUser
-            ? 'bg-[var(--navy)] text-white'
-            : 'bg-[var(--gray-light)] text-[var(--navy-dark)]'
-        )}
-      >
-        <div className={cn('font-serif text-sm leading-relaxed', isUser && 'font-sans')}>
-          {isUser ? text : formatMessageContent(text)}
+      <div className={cn(
+        'max-w-[80%] p-3.5 font-serif text-[14px] leading-7 sm:text-[15px]',
+        isUser ? 'bubble-user italic' : 'bubble-sofia'
+      )}>
+        {isUser ? text : formattedContent}
+      </div>
+
+      {!isUser && (
+        <div className="flex gap-1.5 mt-2.5">
+          <button
+            data-testid="feedback-positive"
+            type="button"
+            onClick={() => handleFeedback('positive')}
+            disabled={feedback !== null}
+            className={cn(
+              'font-sans text-[10px] px-3 py-1 rounded-full border transition-all duration-150',
+              feedback === 'positive'
+                ? 'bg-[var(--gold-pale)] border-[var(--gold)] text-[var(--navy-dark)]'
+                : feedback !== null
+                  ? 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] opacity-70 cursor-not-allowed'
+                  : 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] cursor-pointer hover:border-[var(--gold)] hover:text-[var(--navy-dark)] hover:bg-[var(--gold-pale)]'
+            )}
+          >
+            útil
+          </button>
+          <button
+            data-testid="feedback-negative"
+            type="button"
+            onClick={() => handleFeedback('negative')}
+            disabled={feedback !== null}
+            className={cn(
+              'font-sans text-[10px] px-3 py-1 rounded-full border transition-all duration-150',
+              feedback === 'negative'
+                ? 'bg-[var(--gold-pale)] border-[var(--gold)] text-[var(--navy-dark)]'
+                : feedback !== null
+                  ? 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] opacity-70 cursor-not-allowed'
+                  : 'bg-[var(--cream)] border-[var(--border-color)] text-[var(--text-muted)] cursor-pointer hover:border-[var(--gold)] hover:text-[var(--navy-dark)] hover:bg-[var(--gold-pale)]'
+            )}
+          >
+            impreciso
+          </button>
         </div>
-
-        {!isUser && (
-          <div className="flex items-center gap-1 mt-3 pt-3 border-t border-[var(--gray)] md:gap-2 md:mt-4">
-            <span className="text-[10px] text-[var(--gray-medium)] mr-1 md:text-xs md:mr-2">
-              Esta resposta foi util?
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                'h-11 w-11 min-w-[44px] min-h-[44px] p-0 touch-manipulation active:scale-95',
-                feedback === 'positive' && 'bg-green-100 text-green-700'
-              )}
-              onClick={() => handleFeedback('positive')}
-              disabled={feedback !== null}
-            >
-              <ThumbsUp className="w-4 h-4" />
-              <span className="sr-only">Resposta util</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                'h-11 w-11 min-w-[44px] min-h-[44px] p-0 touch-manipulation active:scale-95',
-                feedback === 'negative' && 'bg-red-100 text-red-700'
-              )}
-              onClick={() => handleFeedback('negative')}
-              disabled={feedback !== null}
-            >
-              <ThumbsDown className="w-4 h-4" />
-              <span className="sr-only">Resposta nao util</span>
-            </Button>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   )
-}
+})
+
+export { ChatMessageInner as ChatMessage }

@@ -18,31 +18,34 @@ export function MessageList({ messages, isLoading, onFeedback }: MessageListProp
   }, [messages])
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div data-testid="message-list" className="flex-1 overflow-y-auto px-4 py-7 chat-scroll scroll-smooth sm:px-6">
+      <div className="max-w-3xl mx-auto">
         {messages.map((message) => (
-          <ChatMessage 
-            key={message.id} 
-            message={message} 
+          <ChatMessage
+            key={message.id}
+            message={message}
             onFeedback={onFeedback}
           />
         ))}
-        
+
         {isLoading && (
-          <div className="flex gap-3 message-enter">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[var(--navy)] text-[var(--gold)] shrink-0">
-              <span className="text-xs font-semibold">S</span>
+          <div data-testid="typing-indicator" className="flex flex-col items-start mb-4 message-enter" role="status" aria-live="polite" aria-busy="true">
+            <span className="sr-only">Carregando resposta</span>
+            <div className="font-sans text-[9px] font-bold tracking-[2px] uppercase text-[var(--gold)] mb-1 px-0.5">
+              SOFIA — ASOF
             </div>
-            <div className="flex-1 bg-[var(--gray-light)] rounded-lg p-4">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 bg-[var(--gray-medium)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-[var(--gray-medium)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-[var(--gray-medium)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="bubble-typing">
+              <div className="border-l-[3px] border-l-solid border-l-[var(--gold)] p-3.5">
+                <div className="flex items-center gap-1.5 py-1.5 px-0.5">
+                  <div className="typing-dot" />
+                  <div className="typing-dot" />
+                  <div className="typing-dot" />
+                </div>
               </div>
             </div>
           </div>
         )}
-        
+
         <div ref={endRef} />
       </div>
     </div>

@@ -1,73 +1,47 @@
 'use client'
 
-import { Scale, FileText, Calendar, HelpCircle } from 'lucide-react'
-
 interface WelcomeScreenProps {
   onSuggestionClick: (suggestion: string) => void
 }
 
 const suggestions = [
-  {
-    icon: FileText,
-    text: 'Quais sao os requisitos para promocao na carreira de Oficial de Chancelaria?',
-  },
-  {
-    icon: Calendar,
-    text: 'Como funciona o processo de remocao para postos no exterior?',
-  },
-  {
-    icon: Scale,
-    text: 'Quais sao os direitos previstos no Plano de Carreira?',
-  },
-  {
-    icon: HelpCircle,
-    text: 'Como solicitar licenca para capacitacao?',
-  },
+  'Promoção na carreira',
+  'Remoção para o exterior',
+  'Direitos e benefícios',
+  'Licença para capacitação',
+  'Concurso OC 2023',
 ]
 
 export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-start px-4 py-6 overflow-y-auto md:justify-center md:py-8">
-      <div className="flex items-center justify-center w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-[var(--navy)] text-[var(--gold)] mb-4 md:w-16 md:h-16 md:mb-6">
-        <Scale className="w-7 h-7 md:w-8 md:h-8" />
-      </div>
-      
-      <h2 className="text-xl font-semibold text-[var(--navy-dark)] mb-2 text-center text-balance md:text-2xl">
-        Bem-vindo à SOFIA
-      </h2>
-      
-      <p className="text-[var(--gray-medium)] text-center max-w-md mb-6 font-serif text-sm leading-relaxed md:text-base md:mb-8">
-        Sou a assistente virtual da ASOF, preparada para orientar sobre a carreira
-        de Oficial de Chancelaria do Ministerio das Relacoes Exteriores.
-      </p>
-      
-      <div className="w-full max-w-lg">
-        <p className="text-xs text-[var(--gray-medium)] text-center mb-3 md:text-sm md:mb-4">
-          Sugestoes de perguntas:
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
-          {suggestions.map((suggestion, index) => (
-            <button
-              key={index}
-              onClick={() => onSuggestionClick(suggestion.text)}
-              className="group flex items-start gap-3 min-h-[88px] rounded-lg border border-[var(--gray)] bg-white p-3.5 text-left transition-all hover:border-[var(--gold)] hover:shadow-md hover:shadow-[var(--gold)]/10 active:scale-[0.98] touch-manipulation cursor-pointer"
-            >
-              <div className="flex items-center justify-center w-9 h-9 min-w-[36px] min-h-[36px] rounded-md bg-[var(--navy)]/5 text-[var(--gold)] transition-colors group-hover:bg-[var(--navy)] group-hover:text-white shrink-0">
-                <suggestion.icon className="w-4.5 h-4.5" />
-              </div>
-              <span className="text-[13px] text-[var(--navy-dark)] leading-snug pt-1">
-                {suggestion.text}
-              </span>
-            </button>
-          ))}
+    <>
+      <div data-testid="welcome-screen" className="flex-1 flex flex-col items-center justify-center px-5 py-7 fade-up">
+        <div className="w-14 h-14 border-2 border-[var(--gold)] rotate-45 flex items-center justify-center mb-2 sm:w-16 sm:h-16">
+          <span className="-rotate-45 font-serif text-lg font-bold text-[var(--gold)] tracking-wider sm:text-xl">
+            SF
+          </span>
         </div>
+        <h1 data-testid="welcome-title" className="font-serif text-[26px] font-bold text-[var(--navy-dark)] tracking-[6px] sm:text-[32px] sm:tracking-[10px]">
+          SOFIA
+        </h1>
+        <div className="w-[100px] h-px bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent my-1" />
+        <p data-testid="welcome-subtitle" className="font-sans text-[11px] text-[var(--text-secondary)] tracking-[1px] uppercase text-center leading-8 max-w-[300px]">
+          Orientação sobre a carreira de Oficial de Chancelaria do Serviço Exterior Brasileiro
+        </p>
       </div>
-      
-      <p className="text-[10px] text-[var(--gray-medium)] mt-6 text-center max-w-sm px-4 md:text-xs md:mt-8">
-        As respostas sao baseadas na legislacao vigente e documentos oficiais. 
-        Para questoes especificas, consulte a ASOF diretamente.
-      </p>
-    </div>
+      <div className="px-4 pb-3.5 flex flex-wrap gap-2 justify-center shrink-0 sm:px-6">
+        {suggestions.map((suggestion, index) => (
+          <button
+            key={index}
+            data-testid="suggestion-button"
+            onClick={() => onSuggestionClick(suggestion)}
+            aria-label={`Enviar sugestão: ${suggestion}`}
+            className="font-sans text-[11px] font-bold text-[var(--navy)] bg-[var(--surface)] border border-[var(--navy)] px-3.5 py-[7px] rounded-3xl cursor-pointer transition-all duration-[180ms] hover:bg-[var(--navy-dark)] hover:text-[var(--gold-light)] hover:border-[var(--navy-dark)] hover:-translate-y-0.5 hover:shadow-[0_4px_14px_rgba(12,26,46,.18)] active:scale-[0.97] touch-manipulation"
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+    </>
   )
 }
