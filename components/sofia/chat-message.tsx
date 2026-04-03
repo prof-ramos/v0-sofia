@@ -46,7 +46,7 @@ function formatMessageContent(text: string) {
 const ChatMessageInner = memo(function ChatMessageInner({ message, onFeedback }: ChatMessageProps) {
   const [feedback, setFeedback] = useState<'positive' | 'negative' | null>(null)
   const isUser = message.role === 'user'
-  const text = useMemo(() => getMessageText(message), [message.id, JSON.stringify(message.parts)])
+  const text = useMemo(() => getMessageText(message), [message.id, message.parts])
   const formattedContent = useMemo(() => formatMessageContent(text), [text])
 
   const handleFeedback = (rating: 'positive' | 'negative') => {
@@ -60,7 +60,7 @@ const ChatMessageInner = memo(function ChatMessageInner({ message, onFeedback }:
         'font-sans text-[9px] font-bold tracking-[2px] uppercase mb-1 px-0.5',
         isUser ? 'text-[var(--text-muted)]' : 'text-[var(--gold)]'
       )}>
-        {isUser ? 'VOCE' : 'SOFIA — ASOF'}
+        {isUser ? 'VOCÊ' : 'SOFIA — ASOF'}
       </div>
 
       <div className={cn(

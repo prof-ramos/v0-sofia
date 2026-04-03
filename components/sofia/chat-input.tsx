@@ -62,7 +62,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           <SendIcon className="send-icon" />
         </button>
       </form>
-      <p className="font-sans text-[10px] text-[var(--text-muted)] text-center mt-1.5 hidden sm:block">
+      <p className="font-sans text-[10px] text-[var(--text-muted)] text-center mt-1.5 block">
         Enter para enviar · Shift+Enter para nova linha
       </p>
     </div>
