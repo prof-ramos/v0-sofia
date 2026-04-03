@@ -7,8 +7,12 @@
  * @property MAX_RESULTS - Número máximo de trechos contextuais que serão enviados ao LLM para formatação do prompt RAG.
  */
 export const CHAT_CONFIG = {
+  // Modelo LLM via OpenAI (prefixo 'openai/' removido no provider direto)
   MODEL: 'openai/gpt-4o-mini',
+  // Modelo de embeddings para busca vetorial
   EMBEDDING_MODEL: 'openai/text-embedding-3-small',
+  // Limiar de similaridade para busca vetorial (0.0-1.0). 0.7 equilibra precisão e recall.
   SIMILARITY_THRESHOLD: 0.7,
+  // Maximo de trechos contextuais enviados ao LLM por query.
   MAX_RESULTS: 5,
 } as const

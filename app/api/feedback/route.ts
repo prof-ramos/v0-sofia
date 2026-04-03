@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { error: 'Dados invalidos', details: validation.error.flatten() },
+        { error: 'Dados inválidos', details: validation.error.flatten() },
         { status: 400 },
       )
     }
@@ -18,7 +18,20 @@ export async function POST(req: Request) {
 
     const supabase = await createClient()
 
-    // Salvar feedback
+    // Verificar se a mensagem existe antes de salvar feedback
+    const { data: messageData } = await supabase
+      .from('chat_messages')
+      .select('id')
+      .eq('id', messageId)
+      .maybeSingle()
+
+    if (!messageData) {
+      return NextResponse.json(
+        { error: 'Mensagem não encontrada' },
+        { status: 404 },
+      )
+    }
+
     const { error } = await supabase.from('feedback').insert({
       message_id: messageId,
       session_id: sessionId,

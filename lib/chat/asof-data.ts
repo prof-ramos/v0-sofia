@@ -16,10 +16,14 @@ export const ASOF_DATA: AsofInstitutionalData[] = [
   { field: 'Site', data: 'https://www.asof.org.br' },
 ];
 
+function escapeMarkdown(text: string): string {
+  return text.replace(/\|/g, '\\|').replace(/\n/g, ' ')
+}
+
 export function formatAsofData(data: AsofInstitutionalData[]): string {
-  let table = '| Campo | Dado |\n|---|---|\n';
-  data.forEach(item => {
-    table += `| ${item.field} | ${item.data} |\n`;
-  });
-  return table.trim();
+  const header = '| Campo | Dado |\n|---|---|\n'
+  const rows = data
+    .map((item) => `| ${escapeMarkdown(item.field)} | ${escapeMarkdown(item.data)} |`)
+    .join('\n')
+  return header + rows
 }

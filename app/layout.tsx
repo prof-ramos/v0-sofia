@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'ASOF - Associação dos Oficiais de Chancelaria' }],
   icons: {
     icon: [
-      { url: '/favicon.svg' },
       { url: '/favicon-light.png', media: '(prefers-color-scheme: light)' },
-      { url: '/favicon-dark.png', media: '(prefers-color-scheme: dark)' }
+      { url: '/favicon-dark.png', media: '(prefers-color-scheme: dark)' },
+      { url: '/favicon.svg' },
     ],
     apple: '/apple-touch-icon.png',
     shortcut: '/shortcut-icon.png'

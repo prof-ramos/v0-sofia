@@ -26,6 +26,11 @@ export default function Error({
       <p className="text-sm text-[var(--text-muted,#6B7280)] text-center max-w-md mb-6">
         Ocorreu um erro inesperado. Tente novamente ou entre em contato com a ASOF.
       </p>
+      {error?.digest && (
+        <p className="text-[10px] text-[var(--text-muted,#6B7280)] text-center mb-4">
+          ID do erro: {error.digest}
+        </p>
+      )}
       <button
         onClick={reset}
         className="inline-flex items-center justify-center gap-2 h-11 px-4 rounded-md bg-[var(--navy,#0F2240)] text-white text-sm font-medium hover:bg-[var(--navy-dark,#0C1A2E)] transition-colors min-w-[44px] min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--navy,#0F2240)]"

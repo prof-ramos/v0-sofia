@@ -1,4 +1,4 @@
-import { streamText, convertToModelMessages, type UIMessage } from 'ai'
+import { streamText, convertToModelMessages } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
 import { NextResponse } from 'next/server'
 import { searchDocuments, formatContext, saveMessage } from '@/lib/rag'
@@ -8,43 +8,48 @@ import { chatRequestSchema } from '@/lib/schemas'
 
 export async function POST(req: Request) {
   try {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'Chave de API da OpenAI não configurada' },
+        { status: 500 },
+      )
+    }
+
     let rawBody;
     try {
       rawBody = await req.json()
     } catch {
       return NextResponse.json(
         { error: 'Requisição inválida', details: 'Corpo JSON inválido' },
-        { status: 400 }
+        { status: 400 },
       )
     }
     const validation = chatRequestSchema.safeParse(rawBody)
 
     if (!validation.success) {
       return NextResponse.json(
-        { error: 'Request inválido', details: validation.error.flatten() },
+        { error: 'Requisição inválida', details: validation.error.flatten() },
         { status: 400 },
       )
     }
 
     const { message, sessionId } = validation.data
-
-    // Converter mensagem para formato esperado
-    const userMessage = message as any
     let userText = ''
-    
-    if (userMessage.parts && Array.isArray(userMessage.parts)) {
-      userText = userMessage.parts
-        .filter((p: any) => p.type === 'text')
-        .map((p: any) => p.text)
+
+    if ('parts' in message && Array.isArray(message.parts)) {
+      userText = message.parts
+        .filter((p: { type?: string; text?: string }) => p.type === 'text')
+        .map((p: { type?: string; text?: string }) => p.text || '')
         .join('')
-    } else if (typeof userMessage.content === 'string') {
-      userText = userMessage.content
+    } else if (typeof message.content === 'string') {
+      userText = message.content
     }
 
     if (!userText.trim()) {
       return NextResponse.json(
         { error: 'Mensagem não contém texto' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -60,9 +65,10 @@ export async function POST(req: Request) {
     const context = formatContext(relevantDocs)
 
     // Criar mensagens para o modelo
-    const messages = await convertToModelMessages([userMessage])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const messages = await convertToModelMessages([message as any])
 
-    const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const openai = createOpenAI({ apiKey })
     const result = streamText({
       model: openai(CHAT_CONFIG.MODEL.replace('openai/', '')),
       system: formatSystemPrompt(context),
@@ -92,7 +98,6 @@ export async function POST(req: Request) {
       },
     })
 
-    result.consumeStream()
     return result.toUIMessageStreamResponse()
   } catch (error) {
     console.error('Erro no endpoint de chat:', error)

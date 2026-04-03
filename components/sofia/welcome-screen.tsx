@@ -30,10 +30,10 @@ export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
         </p>
       </div>
       <div className="px-4 pb-3.5 flex flex-wrap gap-2 justify-center shrink-0 sm:px-6">
-        {suggestions.map((suggestion, index) => (
+        {suggestions.map((suggestion) => (
           <button
-            key={index}
-            data-testid="suggestion-button"
+            key={suggestion}
+            data-testid={`suggestion-${suggestion.toLowerCase().replace(/\s+/g, '-')}`}
             onClick={() => onSuggestionClick(suggestion)}
             aria-label={`Enviar sugestão: ${suggestion}`}
             className="font-sans text-[11px] font-bold text-[var(--navy)] bg-[var(--surface)] border border-[var(--navy)] px-3.5 py-[7px] rounded-3xl cursor-pointer transition-all duration-[180ms] hover:bg-[var(--navy-dark)] hover:text-[var(--gold-light)] hover:border-[var(--navy-dark)] hover:-translate-y-0.5 hover:shadow-[0_4px_14px_rgba(12,26,46,.18)] active:scale-[0.97] touch-manipulation"

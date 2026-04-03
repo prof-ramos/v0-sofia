@@ -25,6 +25,7 @@
   --text-muted: #6B7280;
   --on-dark: #E8EDF4;
   --white: #FFFFFF;
+  --shadow-subtle: rgba(12, 26, 46, 0.07);
 
   /* Design tokens */
   --background: var(--cream);
@@ -150,7 +151,7 @@
   border: 1px solid var(--border-color);
   border-left: 3px solid var(--gold);
   border-radius: 0 10px 10px 10px;
-  box-shadow: 0 2px 8px rgba(12, 26, 46, 0.07);
+  box-shadow: 0 2px 8px var(--shadow-subtle);
 }
 
 .bubble-user {
@@ -163,7 +164,7 @@
   background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: 0 10px 10px 10px;
-  box-shadow: 0 2px 8px rgba(12, 26, 46, 0.07);
+  box-shadow: 0 2px 8px var(--shadow-subtle);
   overflow: hidden;
 }
 
