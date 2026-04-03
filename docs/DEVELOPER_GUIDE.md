@@ -55,7 +55,7 @@ Execute os scripts SQL em ordem no Supabase SQL Editor:
 
 ## 2. Visao Geral da Estrutura do Projeto
 
-```
+```text
 sofia/
 ├── app/                          # Next.js App Router
 │   ├── api/
@@ -92,17 +92,17 @@ sofia/
 
 ### Principais Tecnologias
 
-| Tecnologia | Versao | Uso |
-|------------|--------|-----|
-| Next.js | 16.2.0 | Framework React com App Router |
-| AI SDK | 6.0.0 | Integracao com LLMs via Vercel AI Gateway |
-| Supabase | 2.49.0 | Banco de dados PostgreSQL + pgvector |
-| Tailwind CSS | 4.2.0 | Estilizacao utilitaria |
-| shadcn/ui | - | Componentes de interface |
+| Tecnologia   | Versao | Uso                                       |
+|--------------|--------|-------------------------------------------|
+| Next.js      | 16.2.0 | Framework React com App Router            |
+| AI SDK       | 6.0.0  | Integracao com LLMs via Vercel AI Gateway |
+| Supabase     | 2.49.0 | Banco de dados PostgreSQL + pgvector      |
+| Tailwind CSS | 4.2.0  | Estilizacao utilitaria                    |
+| shadcn/ui    | -      | Componentes de interface                  |
 
 ### Esquema do Banco de Dados
 
-```
+```text
 documents              # Chunks de documentos normativos
 ├── id (uuid)
 ├── content (text)
@@ -137,7 +137,7 @@ feedback               # Avaliacoes das respostas
 
 ### Fluxo de uma Requisicao de Chat
 
-```
+```text
 1. Usuario envia mensagem
    └─> ChatInput.tsx (componente cliente)
 
@@ -197,7 +197,7 @@ O prompt do sistema esta em `app/api/chat/route.ts`. Ao modificar:
 
 #### Chat e RAG
 
-```
+```text
 [ ] Enviar pergunta sobre tema coberto pela base
 [ ] Enviar pergunta fora do escopo (deve redirecionar)
 [ ] Verificar citacoes normativas nas respostas
@@ -207,7 +207,7 @@ O prompt do sistema esta em `app/api/chat/route.ts`. Ao modificar:
 
 #### Interface
 
-```
+```text
 [ ] Tela de boas-vindas com sugestoes
 [ ] Botoes de sugestao funcionando
 [ ] Scroll automatico para nova mensagem
@@ -250,6 +250,7 @@ console.log("[v0] Status do chat:", status)
 **Causa**: Dependencias nao instaladas corretamente.
 
 **Solucao**:
+
 ```bash
 rm -rf node_modules pnpm-lock.yaml
 pnpm install
@@ -260,6 +261,7 @@ pnpm install
 **Causa**: Extensao pgvector nao habilitada ou migracao nao executada.
 
 **Solucao**:
+
 ```sql
 -- No Supabase SQL Editor
 CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA extensions;
@@ -277,7 +279,9 @@ CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA extensions;
 **Causa**: Documentos sem embedding ou threshold muito alto.
 
 **Solucao**:
-1. Verifique se ha documentos: `SELECT COUNT(*) FROM documents WHERE embedding IS NOT NULL`
+
+1. Verifique se ha documentos:
+   `SELECT COUNT(*) FROM documents WHERE embedding IS NOT NULL`
 2. Reduza `SIMILARITY_THRESHOLD` em `lib/rag.ts` (padrao: 0.7)
 3. Adicione mais documentos relevantes
 
@@ -286,6 +290,7 @@ CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA extensions;
 **Causa**: Sessao nao criada ou erro de foreign key.
 
 **Solucao**:
+
 ```sql
 -- Verificar se sessao existe
 SELECT * FROM chat_sessions WHERE session_id = 'seu-session-id';
@@ -299,6 +304,7 @@ INSERT INTO chat_sessions (session_id) VALUES ('seu-session-id');
 **Causa**: message_id invalido ou constraint violada.
 
 **Solucao**:
+
 1. Verifique se a mensagem existe: `SELECT id FROM chat_messages WHERE id = 'uuid'`
 2. Verifique os logs do endpoint `/api/feedback`
 
@@ -307,6 +313,7 @@ INSERT INTO chat_sessions (session_id) VALUES ('seu-session-id');
 **Causa**: Erro de JavaScript ou CSS incompativel.
 
 **Solucao**:
+
 1. Teste no Safari DevTools (modo iPhone)
 2. Verifique `viewport` em `layout.tsx`
 3. Confirme que todas as classes Tailwind sao validas
@@ -316,6 +323,7 @@ INSERT INTO chat_sessions (session_id) VALUES ('seu-session-id');
 **Causa**: Muitos documentos ou API lenta.
 
 **Solucao**:
+
 1. Processe documentos em lotes menores
 2. Use `Promise.allSettled` para resiliencia
 3. Considere gerar embeddings offline
@@ -325,6 +333,7 @@ INSERT INTO chat_sessions (session_id) VALUES ('seu-session-id');
 ## Contato e Suporte
 
 Para questoes tecnicas sobre o SOFIA, consulte:
+
 - Documentacao do [AI SDK](https://sdk.vercel.ai)
 - Documentacao do [Supabase](https://supabase.com/docs)
 - Documentacao do [Next.js](https://nextjs.org/docs)
