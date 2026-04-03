@@ -8,7 +8,7 @@
  */
 export const CHAT_CONFIG = {
   // Modelo LLM via OpenAI (prefixo 'openai/' removido no provider direto)
-  MODEL: 'gpt-4o-mini',
+  MODEL: 'gpt-5.4-nano',
   // Modelo de embeddings para busca vetorial
   EMBEDDING_MODEL: 'openai/text-embedding-3-small',
   // Limiar de similaridade para busca vetorial (0.0-1.0). 0.7 equilibra precisão e recall.
