@@ -22,3 +22,6 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /blob-report/
+
+# Code review artifacts
+crabbit.txt

@@ -28,7 +28,7 @@ export class ChatPage {
     this.welcomeScreen = page.getByTestId('welcome-screen')
     this.welcomeTitle = page.getByTestId('welcome-title')
     this.welcomeSubtitle = page.getByTestId('welcome-subtitle')
-    this.suggestionButtons = page.getByTestId('suggestion-button')
+    this.suggestionButtons = page.locator('[data-testid^="suggestion-"]')
 
     this.messageTextarea = page.getByTestId('chat-input-textarea')
     this.sendButton = page.getByTestId('chat-send-button')
@@ -60,6 +60,10 @@ export class ChatPage {
 
   async clickSuggestion(index: number) {
     await this.suggestionButtons.nth(index).click()
+  }
+
+  async clickSuggestionByText(text: string) {
+    await this.suggestionButtons.filter({ hasText: text }).click()
   }
 
   getUserMessage(text: string): Locator {

@@ -6,8 +6,10 @@ test.describe('SOFIA Chat', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
+    await page.waitForLoadState('load')
     await page.evaluate(() => localStorage.clear())
     await page.reload()
+    await page.waitForLoadState('load')
 
     chatPage = new ChatPage(page)
   })
@@ -107,6 +109,19 @@ test.describe('SOFIA Chat', () => {
     const feedback = chatPage.getFeedbackButtons(assistantMsg)
 
     await feedback.positive.click()
+
+    await expect(feedback.positive).toBeDisabled()
+    await expect(feedback.negative).toBeDisabled()
+  })
+
+  test('feedback negativo desabilita ambos os botoes', async () => {
+    await chatPage.sendMessage('Concurso OC 2023')
+    await chatPage.waitForAssistantResponse()
+
+    const assistantMsg = chatPage.getAssistantMessage().first()
+    const feedback = chatPage.getFeedbackButtons(assistantMsg)
+
+    await feedback.negative.click()
 
     await expect(feedback.positive).toBeDisabled()
     await expect(feedback.negative).toBeDisabled()
