@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
+import type { UIMessage } from 'ai'
 import { SofiaHeader } from './header'
 import { WelcomeScreen } from './welcome-screen'
 import { MessageList } from './message-list'
@@ -31,7 +32,7 @@ function getOrCreateSessionId(): string | null {
 export function ChatContainer() {
   const [sessionId] = useState<string | null>(() => getOrCreateSessionId())
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status } = useChat<UIMessage>({
     transport: new DefaultChatTransport({
       api: '/api/chat',
       prepareSendMessagesRequest: ({ id, messages }) => ({
