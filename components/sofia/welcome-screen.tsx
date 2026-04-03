@@ -1,7 +1,6 @@
 'use client'
 
 import { Scale, FileText, Calendar, HelpCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 interface WelcomeScreenProps {
   onSuggestionClick: (suggestion: string) => void
@@ -42,24 +41,27 @@ export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
         de Oficial de Chancelaria do Ministerio das Relacoes Exteriores.
       </p>
       
-      <div className="w-full max-w-lg space-y-2 md:space-y-3">
+      <div className="w-full max-w-lg">
         <p className="text-xs text-[var(--gray-medium)] text-center mb-3 md:text-sm md:mb-4">
           Sugestoes de perguntas:
         </p>
-        
-        {suggestions.map((suggestion, index) => (
-          <Button
-            key={index}
-            variant="outline"
-            className="w-full justify-start gap-3 min-h-[48px] h-auto py-3 px-4 text-left hover:bg-[var(--gray-light)] hover:border-[var(--gold)] transition-colors active:scale-[0.98] touch-manipulation"
-            onClick={() => onSuggestionClick(suggestion.text)}
-          >
-            <suggestion.icon className="w-5 h-5 text-[var(--gold)] shrink-0" />
-            <span className="text-sm text-[var(--navy-dark)] leading-tight">
-              {suggestion.text}
-            </span>
-          </Button>
-        ))}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
+          {suggestions.map((suggestion, index) => (
+            <button
+              key={index}
+              onClick={() => onSuggestionClick(suggestion.text)}
+              className="group flex items-start gap-3 min-h-[88px] rounded-lg border border-[var(--gray)] bg-white p-3.5 text-left transition-all hover:border-[var(--gold)] hover:shadow-md hover:shadow-[var(--gold)]/10 active:scale-[0.98] touch-manipulation cursor-pointer"
+            >
+              <div className="flex items-center justify-center w-9 h-9 min-w-[36px] min-h-[36px] rounded-md bg-[var(--navy)]/5 text-[var(--gold)] transition-colors group-hover:bg-[var(--navy)] group-hover:text-white shrink-0">
+                <suggestion.icon className="w-4.5 h-4.5" />
+              </div>
+              <span className="text-[13px] text-[var(--navy-dark)] leading-snug pt-1">
+                {suggestion.text}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
       
       <p className="text-[10px] text-[var(--gray-medium)] mt-6 text-center max-w-sm px-4 md:text-xs md:mt-8">
