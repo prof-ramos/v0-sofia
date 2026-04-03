@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     // Salvar feedback
     const { error } = await supabase.from('feedback').insert({
       message_id: messageId,
+      session_id: sessionId,
       rating,
     })
 

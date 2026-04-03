@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       rawBody = await req.json()
     } catch {
       return NextResponse.json(
-        { error: 'Request inválido', details: 'Invalid JSON body' },
+        { error: 'Requisição inválida', details: 'Corpo JSON inválido' },
         { status: 400 }
       )
     }
@@ -41,18 +41,22 @@ export async function POST(req: Request) {
       userText = userMessage.content
     }
 
-    if (!userText) {
+    if (!userText.trim()) {
       return NextResponse.json(
         { error: 'Mensagem não contém texto' },
         { status: 400 }
       )
     }
 
-    // Buscar documentos relevantes via RAG e salvar mensagem do usuário em paralelo
-    const [relevantDocs] = await Promise.all([
-      searchDocuments(userText),
-      saveMessage(sessionId, 'user', userText),
-    ])
+    const trimmedText = userText.trim()
+
+    // Buscar documentos relevantes via RAG
+    const relevantDocs = await searchDocuments(trimmedText)
+
+    // Salvar mensagem do usuário em background (não bloqueia a resposta)
+    saveMessage(sessionId, 'user', trimmedText).catch((err) =>
+      console.error('Erro ao salvar mensagem do usuário:', err),
+    )
     const context = formatContext(relevantDocs)
 
     // Criar mensagens para o modelo

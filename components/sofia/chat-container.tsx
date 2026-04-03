@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { SofiaHeader } from './header'
@@ -13,23 +13,23 @@ const LOCAL_STORAGE_KEY = 'sofia-session-id'
 function getOrCreateSessionId(): string | null {
   if (typeof window === 'undefined') return null
 
-  const existing = localStorage.getItem(LOCAL_STORAGE_KEY)
-  if (existing) {
-    const isValid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(existing)
-    if (isValid) return existing
-  }
+  try {
+    const existing = localStorage.getItem(LOCAL_STORAGE_KEY)
+    if (existing) {
+      const isValid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(existing)
+      if (isValid) return existing
+    }
 
-  const newId = crypto.randomUUID()
-  localStorage.setItem(LOCAL_STORAGE_KEY, newId)
-  return newId
+    const newId = crypto.randomUUID()
+    localStorage.setItem(LOCAL_STORAGE_KEY, newId)
+    return newId
+  } catch {
+    return crypto.randomUUID()
+  }
 }
 
 export function ChatContainer() {
-  const [sessionId, setSessionId] = useState<string | null>(null)
-
-  useEffect(() => {
-    setSessionId(getOrCreateSessionId())
-  }, [])
+  const [sessionId] = useState<string | null>(() => getOrCreateSessionId())
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
