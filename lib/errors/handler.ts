@@ -41,7 +41,7 @@ export function handleError(error: unknown): NextResponse<ErrorResponse> {
   if (!isProd) {
     console.error('[SofIA Error Full]:', error)
   } else {
-    console.error('[SofIA Error]:', details)
+    console.error('[SofIA Error]:', details, error instanceof Error ? error.stack : undefined)
   }
 
   if (error instanceof SofIAError) {

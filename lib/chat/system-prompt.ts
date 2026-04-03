@@ -33,8 +33,6 @@ Você não é um assistente genérico. Recuse educadamente perguntas fora do esc
 
 ## Dados institucionais da ASOF
 
-## Dados institucionais da ASOF
-
 {asofData}
 
 ## Base de conhecimento — ordem de precedência

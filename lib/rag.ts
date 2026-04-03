@@ -19,7 +19,7 @@ const checkHasEmbeddings = unstable_cache(
     return (count ?? 0) > 0
   },
   ['sofia-has-embeddings'],
-  { revalidate: 300 },
+  { revalidate: 60 },
 )
 
 export interface DocumentChunk {
