@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     const messages = await convertToModelMessages([message as any])
 
     const result = streamText({
-      model: openai(CHAT_CONFIG.MODEL.replace('openai/', '')),
+      model: openai(CHAT_CONFIG.MODEL),
       system: formatSystemPrompt(context),
       messages,
       abortSignal: req.signal,
