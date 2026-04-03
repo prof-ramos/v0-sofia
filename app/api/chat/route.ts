@@ -6,10 +6,13 @@ import { CHAT_CONFIG } from '@/lib/chat/constants'
 import { formatSystemPrompt } from '@/lib/chat/system-prompt'
 import { chatRequestSchema } from '@/lib/schemas'
 
+const openai = process.env.OPENAI_API_KEY
+  ? createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null
+
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.OPENAI_API_KEY
-    if (!apiKey) {
+    if (!openai) {
       return NextResponse.json(
         { error: 'Chave de API da OpenAI não configurada' },
         { status: 500 },
@@ -68,11 +71,14 @@ export async function POST(req: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const messages = await convertToModelMessages([message as any])
 
-    const openai = createOpenAI({ apiKey })
     const result = streamText({
       model: openai(CHAT_CONFIG.MODEL.replace('openai/', '')),
       system: formatSystemPrompt(context),
       messages,
+      abortSignal: req.signal,
+      onError: (error) => {
+        console.error('[AI Stream] Erro durante streaming:', error)
+      },
       onFinish: async ({ text }) => {
         let attempts = 0;
         const maxRetries = 2;
