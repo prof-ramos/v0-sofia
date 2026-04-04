@@ -5,6 +5,7 @@ import { searchDocuments, formatContext, saveMessage } from '@/lib/rag'
 import { CHAT_CONFIG } from '@/lib/chat/constants'
 import { formatSystemPrompt } from '@/lib/chat/system-prompt'
 import { chatRequestSchema } from '@/lib/schemas'
+import { chatLimiter } from '@/lib/rate-limit'
 
 const openai = process.env.OPENAI_API_KEY
   ? createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
@@ -49,6 +50,16 @@ async function saveWithRetry(
 
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const limit = chatLimiter.check(ip)
+    if (!limit.allowed) {
+      const retryAfter = Math.ceil((limit.resetAt - Date.now()) / 1000)
+      return NextResponse.json(
+        { error: 'Limite de requisicoes excedido. Tente novamente em instantes.' },
+        { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+      )
+    }
+
     if (!openai) {
       return NextResponse.json(
         { error: 'Chave de API da OpenAI não configurada' },
