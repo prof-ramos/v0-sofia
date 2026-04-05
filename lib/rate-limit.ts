@@ -15,7 +15,7 @@ interface RateLimitResult {
   resetAt: number
 }
 
-function createRateLimiter(config: RateLimitConfig) {
+export function createRateLimiter(config: RateLimitConfig) {
   const { maxRequests, windowMs } = config
   const requests = new Map<string, number[]>()
   let lastCleanup = Date.now()
