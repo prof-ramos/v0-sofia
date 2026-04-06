@@ -55,7 +55,11 @@ describe('handleError', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
-    process.env.NODE_ENV = originalNodeEnv
+    if (originalNodeEnv === undefined) {
+      delete process.env.NODE_ENV
+    } else {
+      process.env.NODE_ENV = originalNodeEnv
+    }
   })
 
   describe('em desenvolvimento (NODE_ENV != production)', () => {

@@ -57,6 +57,7 @@ describe('POST /api/feedback', () => {
     const response = await POST(req)
 
     expect(response.status).toBe(429)
+    expect(response.headers.get('Retry-After')).toBeTruthy()
   })
 
   it('retorna 400 para JSON invalido', async () => {

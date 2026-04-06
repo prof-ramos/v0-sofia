@@ -74,7 +74,7 @@ describe('formatContext', () => {
       },
     ]
     const result = formatContext(docs)
-    expect(result).not.toContain(', ')
+    expect(result).not.toMatch(/,\s*Art\./)
     expect(result).toContain('Decreto')
   })
 
@@ -139,9 +139,19 @@ describe('formatContext', () => {
 })
 
 describe('generateEmbedding', () => {
+  const originalOpenAIKey = process.env.OPENAI_API_KEY
+
   beforeEach(() => {
     vi.resetModules()
     process.env.OPENAI_API_KEY = 'test-key'
+  })
+
+  afterEach(() => {
+    if (originalOpenAIKey === undefined) {
+      delete process.env.OPENAI_API_KEY
+    } else {
+      process.env.OPENAI_API_KEY = originalOpenAIKey
+    }
   })
 
   it('gera embedding via provider OpenAI mockado', async () => {
