@@ -5,12 +5,16 @@ import { feedbackLimiter } from '@/lib/rate-limit'
 
 export async function POST(req: Request) {
   try {
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const ip =
+      req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      req.headers.get('x-real-ip')?.trim() ||
+      'unknown'
     const limit = feedbackLimiter.check(ip)
     if (!limit.allowed) {
+      const retryAfter = Math.ceil((limit.resetAt - Date.now()) / 1000)
       return NextResponse.json(
         { error: 'Limite de requisicoes excedido. Tente novamente em instantes.' },
-        { status: 429 },
+        { status: 429, headers: { 'Retry-After': String(retryAfter) } },
       )
     }
 

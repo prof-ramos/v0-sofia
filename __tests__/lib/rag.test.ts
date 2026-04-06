@@ -144,12 +144,7 @@ describe('generateEmbedding', () => {
     process.env.OPENAI_API_KEY = 'test-key'
   })
 
-  it('lanca erro quando openai nao esta configurado', async () => {
-    // Para testar sem OPENAI_API_KEY, precisamos reimportar o modulo
-    // Neste caso, o mock de createOpenAI ja retorna um provider valido
-    // pois OPENAI_API_KEY esta definida no beforeEach
-    // O teste de "nao configurado" requer reset completo do modulo
-    // que e mais complexo com ESM. Testamos o cenario feliz aqui.
+  it('gera embedding via provider OpenAI mockado', async () => {
 
     const { embed } = await import('ai')
     const mockEmbed = vi.mocked(embed)

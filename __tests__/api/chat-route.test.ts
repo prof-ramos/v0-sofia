@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { NextResponse } from 'next/server'
 
 // Mock dependencias externas
@@ -63,10 +63,17 @@ function createRequest(body: unknown, headers?: Record<string, string>): Request
 }
 
 describe('POST /api/chat', () => {
+  const originalEnv = { ...process.env }
+
   beforeEach(() => {
     vi.resetModules()
     process.env.OPENAI_API_KEY = 'test-key'
     vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    process.env = { ...originalEnv }
   })
 
   it('retorna 429 quando rate limit excedido', async () => {
@@ -87,6 +94,7 @@ describe('POST /api/chat', () => {
 
     expect(response.status).toBe(429)
     expect(body.error).toContain('Limite')
+    expect(response.headers.get('Retry-After')).toBeTruthy()
 
     // Reset mock para outros testes
     vi.mocked(chatLimiter.check).mockReturnValue({

@@ -50,7 +50,10 @@ async function saveWithRetry(
 
 export async function POST(req: Request) {
   try {
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const ip =
+      req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      req.headers.get('x-real-ip')?.trim() ||
+      'unknown'
     const limit = chatLimiter.check(ip)
     if (!limit.allowed) {
       const retryAfter = Math.ceil((limit.resetAt - Date.now()) / 1000)

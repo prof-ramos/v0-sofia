@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   SofIAError,
   ValidationError,
@@ -47,8 +47,15 @@ describe('DatabaseError', () => {
 })
 
 describe('handleError', () => {
+  const originalNodeEnv = process.env.NODE_ENV
+
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    process.env.NODE_ENV = originalNodeEnv
   })
 
   describe('em desenvolvimento (NODE_ENV != production)', () => {
