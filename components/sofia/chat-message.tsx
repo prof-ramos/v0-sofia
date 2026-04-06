@@ -94,7 +94,7 @@ const ChatMessageInner = memo(function ChatMessageInner({ message, onFeedback }:
             onClick={() => handleFeedback('positive')}
             disabled={feedback !== null}
             className={cn(
-              'font-sans text-[10px] px-3 py-1 rounded-full border transition-all duration-150',
+              'font-sans text-xs px-3.5 py-2.5 rounded-full border min-h-[44px] inline-flex items-center justify-center transition-all duration-150 focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-1',
               getFeedbackButtonClass(feedback, 'positive'),
             )}
           >
@@ -106,7 +106,7 @@ const ChatMessageInner = memo(function ChatMessageInner({ message, onFeedback }:
             onClick={() => handleFeedback('negative')}
             disabled={feedback !== null}
             className={cn(
-              'font-sans text-[10px] px-3 py-1 rounded-full border transition-all duration-150',
+              'font-sans text-xs px-3.5 py-2.5 rounded-full border min-h-[44px] inline-flex items-center justify-center transition-all duration-150 focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-1',
               getFeedbackButtonClass(feedback, 'negative'),
             )}
           >

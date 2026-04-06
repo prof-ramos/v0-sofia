@@ -49,7 +49,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           aria-label="Campo de mensagem"
           disabled={disabled}
           rows={1}
-          className="flex-1 resize-none rounded-3xl border border-[var(--border-color)] bg-[var(--cream)] px-[18px] py-2.5 font-serif leading-6 text-[var(--ink)] placeholder:text-[var(--text-muted)] placeholder:italic focus:border-[var(--navy)] focus:bg-[var(--surface)] focus:outline-none disabled:opacity-50 transition-colors duration-200"
+          className="flex-1 resize-none rounded-3xl border border-[var(--border-color)] bg-[var(--cream)] px-[18px] py-2.5 font-serif leading-6 text-[var(--ink)] placeholder:text-[var(--text-muted)] placeholder:italic focus:border-[var(--navy)] focus:bg-[var(--surface)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--navy)] focus-visible:ring-offset-1 disabled:opacity-50 transition-colors duration-200"
           style={{ height: '44px', maxHeight: '120px', fontSize: '16px' }}
         />
         <button

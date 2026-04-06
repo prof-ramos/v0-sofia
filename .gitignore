@@ -25,3 +25,6 @@ next-env.d.ts
 
 # Code review artifacts
 crabbit.txt
+
+# Test coverage
+coverage/

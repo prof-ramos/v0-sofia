@@ -71,19 +71,21 @@ export function ChatContainer() {
     <div className="flex flex-col h-screen bg-[var(--cream)]">
       <SofiaHeader />
 
-      {messages.length === 0 ? (
-        <WelcomeScreen onSuggestionClick={handleSend} />
-      ) : (
-        <MessageList
-          messages={messages}
-          isLoading={isLoading}
-          onFeedback={handleFeedback}
-        />
-      )}
+      <main className="flex-1 flex flex-col min-h-0">
+        {messages.length === 0 ? (
+          <WelcomeScreen onSuggestionClick={handleSend} />
+        ) : (
+          <MessageList
+            messages={messages}
+            isLoading={isLoading}
+            onFeedback={handleFeedback}
+          />
+        )}
 
-      <ChatInput onSend={handleSend} disabled={isLoading} />
+        <ChatInput onSend={handleSend} disabled={isLoading} />
+      </main>
 
-      <footer data-testid="footer" className="bg-[var(--navy-dark)] px-5 py-[7px] font-sans text-xs font-bold text-[var(--gold-light)] text-center tracking-[1.5px] uppercase shrink-0">
+      <footer data-testid="footer" className="bg-[var(--navy-dark)] px-5 py-2 font-sans text-xs font-bold text-[var(--gold-light)] text-center tracking-[1.5px] uppercase shrink-0">
         Respostas com base em normas e documentos oficiais · ASOF — CNPJ 26.989.392/0001-57
       </footer>
     </div>

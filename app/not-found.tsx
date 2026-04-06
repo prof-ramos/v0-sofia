@@ -17,7 +17,7 @@ export default function NotFound(): React.JSX.Element {
       <h1 className="text-xl font-semibold text-[var(--navy-dark)] mb-2">
         Página não encontrada
       </h1>
-      <p className="text-sm text-[var(--gray-medium)] text-center max-w-md mb-6">
+      <p className="text-sm text-[var(--text-muted)] text-center max-w-md mb-6">
         A página que você procura não existe ou foi removida.
       </p>
       <Link
