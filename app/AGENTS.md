@@ -1,21 +1,19 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-03 | Updated: 2026-04-03 -->
+<!-- Generated: 2026-04-05 | Updated: 2026-04-05 -->
 
 # app
 
 ## Purpose
 
-Rotas Next.js App Router. Contém páginas, layouts, API routes e estilos globais.
+Rotas da aplicação Next.js App Router. Layout raiz, página principal e API routes.
 
 ## Key Files
 
 | File | Description |
 |------|-------------|
-| `layout.tsx` | Layout raiz (metadata, fontes, lang pt-BR) |
-| `globals.css` | Design tokens ASOF, animações, bubble styles, scrollbar |
-| `page.tsx` | Página principal (renderiza ChatContainer) |
-| `error.tsx` | Error boundary com botão de retry |
-| `not-found.tsx` | Página 404 com link para home |
+| `layout.tsx` | Layout raiz: metadata, Geist Mono font, Analytics, lang="pt-BR" |
+| `page.tsx` | Página principal: renderiza `ChatContainer` |
+| `globals.css` | CSS global: tokens ASOF (navy/gold), animações, bubbles, scrollbar |
 
 ## Subdirectories
 
@@ -27,22 +25,26 @@ Rotas Next.js App Router. Contém páginas, layouts, API routes e estilos globai
 
 ### Working In This Directory
 
-- `globals.css` contém todos os design tokens (CSS custom properties em `:root`)
-- Tailwind 4: tokens mapeados via `@theme inline`, não há tailwind.config
-- `@media (prefers-reduced-motion: reduce)` já implementado
-- Classes de bubble: `.bubble-sofia`, `.bubble-user`, `.bubble-typing`
+- `layout.tsx`: Server Component, define metadata e viewport
+- `page.tsx`: Server Component que monta a UI via `ChatContainer` (client component)
+- `globals.css`: Design tokens em CSS custom properties (--navy, --gold, --cream, etc.)
+- Tema: Trebuchet MS (sans), Georgia (serif), Geist Mono (mono)
+- Suporte a `prefers-reduced-motion` para acessibilidade
 
 ### Common Patterns
 
-- CSS custom properties para cores: `--navy-dark`, `--navy`, `--gold`, `--cream`, `--ink`, etc.
-- Fontes: `--font-sans` (Trebuchet MS), `--font-serif` (Georgia), `--font-mono` (Geist Mono)
-- Safe area iOS: `.safe-area-top`, `.safe-area-bottom`
+- Imports de fontes via `next/font/google`
+- Analytics via `@vercel/analytics/next`
 
 ## Dependencies
 
 ### Internal
 
-- `components/sofia/` — Componentes renderizados nas páginas
-- `lib/` — Lógica usada pelas API routes
+- `components/sofia/chat-container.tsx` — Componente principal renderizado na página
+
+### External
+
+- `@vercel/analytics/next` — Analytics
+- `next/font/google` — Geist Mono
 
 <!-- MANUAL: -->

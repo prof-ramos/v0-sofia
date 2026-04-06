@@ -2,6 +2,7 @@
 
 import { useState, useMemo, memo } from 'react'
 import type { UIMessage } from 'ai'
+import ReactMarkdown from 'react-markdown'
 import { cn } from '@/lib/utils'
 
 interface ChatMessageProps {
@@ -30,16 +31,18 @@ function formatMessageContent(text: string) {
       )
     }
 
-    return part.split('\n\n').map((paragraph, pIndex) => (
-      <p key={`${index}-${pIndex}`} className="mb-3 last:mb-0">
-        {paragraph.split('\n').map((line, lIndex, arr) => (
-          <span key={lIndex}>
-            {line}
-            {lIndex < arr.length - 1 && <br />}
-          </span>
-        ))}
-      </p>
-    ))
+    return (
+      <ReactMarkdown
+        key={index}
+        components={{
+          p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+          strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+          em: ({ children }) => <em>{children}</em>,
+        }}
+      >
+        {part}
+      </ReactMarkdown>
+    )
   })
 }
 

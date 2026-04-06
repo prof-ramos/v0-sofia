@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-03 | Updated: 2026-04-03 -->
+<!-- Generated: 2026-04-03 | Updated: 2026-04-05 -->
 
 # docs
 
@@ -12,6 +12,7 @@ Documentação do projeto para desenvolvedores.
 | File | Description |
 |------|-------------|
 | `DEVELOPER_GUIDE.md` | Guia de desenvolvimento: setup, arquitetura, testes manuais |
+| `CODE_REVIEW.md` | Registro de code review com findings e correcoes aplicadas |
 
 ## For AI Agents
 

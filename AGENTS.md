@@ -1,4 +1,4 @@
-<!-- Generated: 2026-04-03 | Updated: 2026-04-03 -->
+<!-- Generated: 2026-04-05 | Updated: 2026-04-05 -->
 
 # v0-sofia
 
@@ -10,12 +10,12 @@ SOFIA (Sistema de Orientação Funcional e Informação Administrativa) — assi
 
 | File | Description |
 |------|-------------|
-| `package.json` | Dependências e scripts (dev, build, lint, test:e2e) |
-| `tsconfig.json` | Configuração TypeScript (strict, path alias @/) |
-| `vercel.json` | Configuração Vercel (rewrite de API routes) |
-| `playwright.config.ts` | Configuração Playwright E2E (chromium, serial) |
-| `.env.local` | Variáveis de ambiente (Supabase + OpenAI) |
+| `package.json` | Dependências e scripts (dev, build, start, lint, test) |
+| `tsconfig.json` | Configuração TypeScript (path alias @/*) |
+| `vitest.config.ts` | Configuração Vitest (jsdom, alias @/) |
+| `next.config.ts` | Configuração Next.js 16 |
 | `CLAUDE.md` | Instruções para Claude Code |
+| `tailwind.config.ts` | Configuração Tailwind CSS |
 
 ## Subdirectories
 
@@ -24,31 +24,32 @@ SOFIA (Sistema de Orientação Funcional e Informação Administrativa) — assi
 | `app/` | Rotas Next.js App Router (see `app/AGENTS.md`) |
 | `components/` | Componentes React (see `components/AGENTS.md`) |
 | `lib/` | Lógica de negócio, RAG, schemas (see `lib/AGENTS.md`) |
+| `__tests__/` | Testes unitários Vitest (80 testes) (see `__tests__/AGENTS.md`) |
 | `e2e/` | Testes E2E Playwright (see `e2e/AGENTS.md`) |
-| `scripts/` | Scripts SQL de criação e seed do banco (see `scripts/AGENTS.md`) |
-| `docs/` | Documentação do projeto (see `docs/AGENTS.md`) |
-| `public/` | Assets estáticos (favicons, logos) (see public/AGENTS.md) |
+| `docs/` | Documentação para desenvolvedores (see `docs/AGENTS.md`) |
+| `scripts/` | Scripts SQL para Supabase (see `scripts/AGENTS.md`) |
+| `public/` | Assets estáticos (favicons, logos) (see `public/AGENTS.md`) |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- Stack: Next.js 16.2 + AI SDK 6 + Supabase + Tailwind CSS 4.2
-- `npm run build` para verificar TypeScript; `npm run lint` para ESLint
-- `npm run test:e2e` roda 11 testes Playwright contra API real
-- Idioma da interface: pt-BR; mensagens de commit em pt-BR
-- Path alias: `@/*` mapeia para raiz do projeto
+- Stack: Next.js 16.2 + AI SDK 6.0 + Supabase + Tailwind CSS 4.2 + shadcn/ui
+- Modelo LLM: `openai/gpt-4o-mini` via AI Gateway (ou `gpt-5.4-nano` em dev via provider direto)
+- Embedding: `text-embedding-3-small` (OpenAI)
+- Path alias: `@/*` aponta para raiz do projeto
+- Todos os componentes sofia são `'use client'`
 
 ### Testing Requirements
 
-- Sem suite de testes unitários configurada
-- E2E via Playwright: `npx playwright test` (chromium only, serial)
-- Page Object em `e2e/chat_page_object.ts`
+- `npm run test` — Vitest (80 testes em 8 arquivos)
+- `npx playwright test` — E2E (11 testes)
+- Sempre rodar `npm run test` apos alteracoes em `lib/` ou `app/api/`
 
 ### Common Patterns
 
-- Client components marcados com `'use client'`
-- CSS custom properties em `app/globals.css` (brandkit ASOF: navy + gold)
+- Mensagens de erro em pt-BR
+- Tema institucional ASOF (navy + gold) em CSS variables
 - Supabase clients separados: browser (`lib/supabase/client.ts`) e server (`lib/supabase/server.ts`)
 
 ## Dependencies
@@ -56,11 +57,13 @@ SOFIA (Sistema de Orientação Funcional e Informação Administrativa) — assi
 ### External
 
 - `next` 16.2 — Framework
-- `ai` + `@ai-sdk/react` 6.x — Chat via useChat + streaming
-- `@ai-sdk/openai` — Provider OpenAI direto
-- `@supabase/supabase-js` — Banco de dados + pgvector
+- `ai` + `@ai-sdk/react` 6.0 — Chat SDK (useChat, streamText)
+- `@ai-sdk/openai` — Provider OpenAI
+- `@supabase/supabase-js` — Cliente Supabase
+- `react-markdown` — Renderizacao markdown
+- `tailwindcss` 4.2 — Estilizacao
 - `zod` — Validação de schemas
-- `@playwright/test` — Testes E2E
-- `tailwindcss` 4.2 — Estilização
+- `@vercel/analytics` — Analytics
+- `next-themes` — Tema dark/light
 
 <!-- MANUAL: -->

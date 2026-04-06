@@ -1,42 +1,37 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-03 | Updated: 2026-04-03 -->
+<!-- Generated: 2026-04-05 | Updated: 2026-04-05 -->
 
 # components
 
 ## Purpose
 
-Componentes React organizados por domínio. Componentes Sofia são específicos do chatbot; ícones são SVGs inline.
+Componentes React organizados por domínio (sofia) e UI (shadcn/ui).
 
 ## Subdirectories
 
 | Directory | Purpose |
 |-----------|---------|
-| `sofia/` | Componentes de domínio do chat (see `sofia/AGENTS.md`) |
+| `sofia/` | Componentes de domínio do chat SOFIA (see `sofia/AGENTS.md`) |
+| `ui/` | Componentes shadcn/ui (não editar manualmente) (see `ui/AGENTS.md`) |
 | `icons/` | Ícones SVG inline (see `icons/AGENTS.md`) |
+
+## Key Files
+
+| File | Description |
+|------|-------------|
+| `theme-provider.tsx` | Provider de tema (next-themes, dark/light) |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- Todos os componentes sofia são `'use client'`
-- Estilização via Tailwind + CSS custom properties (não usa styled-components)
-- `cn()` de `@/lib/utils` para classNames condicionais
+- `ui/`: gerenciado pelo CLI `npx shadcn@latest add`, não editar manualmente
+- `sofia/`: todos os componentes são `'use client'`
+- `icons/`: componentes funcionais SVG com props `className` e `color`
 
 ### Common Patterns
 
-- Props interfaces definidas acima do componente
-- `data-testid` em elementos-chave para E2E
-- `memo()` para otimizar re-renders (ex: ChatMessage)
-- `useCallback` para handlers passados como props
-
-## Dependencies
-
-### Internal
-
-- `lib/utils.ts` — Utilitário `cn()` (clsx + twMerge)
-
-### External
-
-- `ai` — Tipo `UIMessage` usado em componentes de mensagem
+- `cn()` de `@/lib/utils` para merge de classes Tailwind
+- Path alias `@/` para imports absolutos
 
 <!-- MANUAL: -->

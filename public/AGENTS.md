@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-03 | Updated: 2026-04-03 -->
+<!-- Generated: 2026-04-03 | Updated: 2026-04-05 -->
 
 # public
 
@@ -16,6 +16,10 @@ Assets estáticos servidos diretamente: favicons, logos e placeholders.
 | `favicon-light.png` | Favicon para tema claro |
 | `favicon-dark.png` | Favicon para tema escuro |
 | `apple-touch-icon.png` | Ícone para iOS home screen |
+| `apple-icon.png` | Ícone Apple (PWA) |
+| `icon-dark-32x32.png` | Favicon 32x32 para tema escuro |
+| `icon-light-32x32.png` | Favicon 32x32 para tema claro |
+| `icon.svg` | Ícone SVG genérico |
 
 ## For AI Agents
 

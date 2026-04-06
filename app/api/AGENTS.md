@@ -1,42 +1,41 @@
-<!-- Parent: ../../AGENTS.md -->
-<!-- Generated: 2026-04-03 | Updated: 2026-04-03 -->
+<!-- Parent: ../AGENTS.md -->
+<!-- Generated: 2026-04-05 | Updated: 2026-04-05 -->
 
 # api
 
 ## Purpose
 
-API routes do Next.js. Endpoints de chat (streaming com RAG) e feedback.
+API routes da aplicação: endpoint de chat (streaming com RAG) e feedback.
 
 ## Subdirectories
 
 | Directory | Purpose |
 |-----------|---------|
-| `chat/` | Endpoint principal de chat com RAG (see `chat/AGENTS.md`) |
+| `chat/` | Endpoint principal de chat com RAG e streaming (see `chat/AGENTS.md`) |
 | `feedback/` | Endpoint de feedback positivo/negativo (see `feedback/AGENTS.md`) |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- Todas as routes são `export async function POST(req: Request)`
-- Validação via Zod (`lib/schemas.ts`)
-- Retorno de erro: `NextResponse.json({ error: '...' }, { status: ... })`
-- Mensagens de erro em pt-BR
+- Cada subdiretório e um endpoint POST independente
+- Rate limiting via `lib/rate-limit.ts` (sliding window in-memory)
+- Validação de input via Zod schemas em `lib/schemas.ts`
+- Erros tratados via `lib/errors/handler.ts`
 
 ### Common Patterns
 
-- `try/catch` no nível da route handler
-- Fire-and-forget para operações não-bloqueantes (`.catch(console.error)`)
-- Resposta de chat: `result.toUIMessageStreamResponse()` (AI SDK streaming)
+- Route handlers exportam `async function POST(request: Request)`
+- Response de erro padrao: `{ error: string, code?: string }`
+- Streaming via `toUIMessageStreamResponse()` do AI SDK
 
 ## Dependencies
 
 ### Internal
 
-- `lib/rag.ts` — Busca vetorial + salvamento de mensagens
-- `lib/chat/constants.ts` — Config do modelo
-- `lib/chat/system-prompt.ts` — Formatação do prompt
-- `lib/schemas.ts` — Validação de requests
-- `lib/supabase/server.ts` — Cliente Supabase server-side
+- `lib/rag.ts` — Busca vetorial e formatação de contexto
+- `lib/schemas.ts` — Validação Zod
+- `lib/rate-limit.ts` — Rate limiting
+- `lib/errors/handler.ts` — Tratamento de erros
 
 <!-- MANUAL: -->

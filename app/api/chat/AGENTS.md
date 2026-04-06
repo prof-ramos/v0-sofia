@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-03 | Updated: 2026-04-03 -->
+<!-- Generated: 2026-04-03 | Updated: 2026-04-05 -->
 
 # chat
 
@@ -18,7 +18,7 @@ Endpoint principal de chat. Recebe mensagem do usuário, executa RAG, envia para
 ### Working In This Directory
 
 - Provider OpenAI direto via `createOpenAI()` (bypass AI Gateway para dev)
-- Modelo: `openai/gpt-4o-mini` → `.replace('openai/', '')` para provider direto
+- Modelo: `gpt-5.4-nano` (config em `lib/chat/constants.ts`)
 - OPENAI_API_KEY validada no entry point
 - `convertToModelMessages()` com cast `as any` (Zod union type incompatível com UIMessage)
 - `saveMessage()` em background (fire-and-forget) com retry (3 tentativas)
