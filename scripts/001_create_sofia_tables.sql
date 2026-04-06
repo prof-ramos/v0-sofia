@@ -48,7 +48,8 @@ create index if not exists chat_messages_session_idx on public.chat_messages (se
 -- Tabela de feedback das respostas
 create table if not exists public.feedback (
   id uuid primary key default gen_random_uuid(),
-  message_id uuid not null references public.chat_messages(id) on delete cascade,
+  message_id text not null,
+  session_id text,
   rating text not null check (rating in ('positive', 'negative')),
   comment text,
   created_at timestamptz default now()

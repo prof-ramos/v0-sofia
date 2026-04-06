@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 export async function createClient() {
@@ -24,5 +25,16 @@ export async function createClient() {
         },
       },
     },
+  )
+}
+
+/**
+ * Client com SERVICE_ROLE_KEY para operacoes server-side privilegiadas (RAG, persistencia).
+ * Nao usa cookies — apenas para backend.
+ */
+export function createServiceClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   )
 }

@@ -1,17 +1,18 @@
 import { embed } from 'ai'
+import { createOpenAI } from '@ai-sdk/openai'
 import { unstable_cache } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createServiceClient } from '@/lib/supabase/server'
 import { CHAT_CONFIG } from '@/lib/chat/constants'
 
 const { EMBEDDING_MODEL, SIMILARITY_THRESHOLD, MAX_RESULTS } = CHAT_CONFIG
 
+const openai = process.env.OPENAI_API_KEY
+  ? createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null
+
 const checkHasEmbeddings = unstable_cache(
   async () => {
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    const supabase = createServiceClient()
     const { count } = await supabase
       .from('documents')
       .select('id', { count: 'exact', head: true })
@@ -35,8 +36,11 @@ export interface DocumentChunk {
  * Gera embedding para uma query usando o AI Gateway
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
+  if (!openai) {
+    throw new Error('Chave de API da OpenAI nao configurada')
+  }
   const { embedding } = await embed({
-    model: EMBEDDING_MODEL,
+    model: openai.textEmbeddingModel(EMBEDDING_MODEL),
     value: text,
   })
   return embedding
@@ -46,7 +50,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
  * Busca documentos relevantes no banco de dados usando similaridade de vetores
  */
 export async function searchDocuments(query: string): Promise<DocumentChunk[]> {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
   // Verificar se existem documentos com embeddings (cacheado por 60s)
   const hasEmbeddings = await checkHasEmbeddings()
@@ -123,9 +127,9 @@ export async function saveMessage(
   content: string,
   sourceDocuments?: string[]
 ) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
-  // Verificar ou criar sessão
+  // Verificar ou criar sessao
   const { data: session } = await supabase
     .from('chat_sessions')
     .select('session_id')

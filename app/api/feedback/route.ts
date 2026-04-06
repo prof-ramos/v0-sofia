@@ -1,15 +1,38 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { feedbackRequestSchema } from '@/lib/schemas'
+import { feedbackLimiter } from '@/lib/rate-limit'
 
 export async function POST(req: Request) {
   try {
-    const rawBody = await req.json()
+    const ip =
+      req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      req.headers.get('x-real-ip')?.trim() ||
+      'unknown'
+    const limit = feedbackLimiter.check(ip)
+    if (!limit.allowed) {
+      const retryAfter = Math.ceil((limit.resetAt - Date.now()) / 1000)
+      return NextResponse.json(
+        { error: 'Limite de requisicoes excedido. Tente novamente em instantes.' },
+        { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+      )
+    }
+
+    let rawBody
+    try {
+      rawBody = await req.json()
+    } catch {
+      return NextResponse.json(
+        { error: 'Requisicao invalida', details: 'Corpo JSON invalido' },
+        { status: 400 },
+      )
+    }
+
     const validation = feedbackRequestSchema.safeParse(rawBody)
 
     if (!validation.success) {
       return NextResponse.json(
-        { error: 'Dados inválidos', details: validation.error.flatten() },
+        { error: 'Dados invalidos', details: validation.error.flatten() },
         { status: 400 },
       )
     }
@@ -17,29 +40,6 @@ export async function POST(req: Request) {
     const { messageId, sessionId, rating } = validation.data
 
     const supabase = await createClient()
-
-    // Verificar se a mensagem existe e pertence à sessão
-    const { data: messageData, error: queryError } = await supabase
-      .from('chat_messages')
-      .select('id')
-      .eq('id', messageId)
-      .eq('session_id', sessionId)
-      .maybeSingle()
-
-    if (queryError) {
-      console.error('Erro ao buscar mensagem:', queryError)
-      return NextResponse.json(
-        { error: 'Erro ao buscar mensagem' },
-        { status: 500 },
-      )
-    }
-
-    if (!messageData) {
-      return NextResponse.json(
-        { error: 'Mensagem não encontrada' },
-        { status: 404 },
-      )
-    }
 
     const { error } = await supabase.from('feedback').insert({
       message_id: messageId,
